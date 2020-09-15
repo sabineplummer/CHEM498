@@ -1,3 +1,4 @@
 # CHEM498
 CHEM498 R scripts
-this is a line from R studio 
+This is a line from R studio 
+Line added from Git Hub
