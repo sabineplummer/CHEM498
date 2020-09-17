@@ -11,14 +11,13 @@ library(readr)
 # F-test
 F_Test <- function (x, y) { #variables 
   if (sd(x) > sd(y)) {
-    return (sd(x))^2/(sd(y))^2
+    return ((sd(x))^2/(sd(y))^2) #determines which should be the nominator to return F calc >=1
   } 
   if (sd(y) > sd(x)) {
-    return (sd(y))^2/(sd(x))^2
+    return ((sd(y))^2/(sd(x))^2)
   }
 }
 
-  
 # Spool 
 S_Pool <- function (x, y) { #variables
   output <- sqrt((((sd(x))^2)*(length(x)-1)+((sd(y))^2)*(length(y)-1))/(length(x)+length(y)-2)) #formula
@@ -38,17 +37,59 @@ T_Test_Uvar <- function (x, y) { #variables
 
 # Appropriate T-test runs based on F-test result
 T_Test <- function (x,y) { #variables
-  if (F_Test(x,y) <= qf(0.95, df1=(length(x)-1), df2=(length(y)-1))) {
+  if (F_Test(x,y) <= qf(0.95, df1=(length(x)-1), df2=(length(y)-1))) { #determines if Fcalc <= Ftable
    return (T_Test_Evar(x,y))
     } 
-  if (F_Test(x,y) > qf(0.95, df1=(length(x)-1), df2=(length(y)-1))) {
+  if (F_Test(x,y) > qf(0.95, df1=(length(x)-1), df2=(length(y)-1))) { #determines if Fcalc > Ftable
    return (T_Test_Uvar(x,y))
     }
 }
 
-# Randomly generated data
+# Randomly generated data equal variance
 set.seed(20)
-x <- rnorm(20)
-y <- rnorm(20)
+a <- rnorm(20)
+b <- rnorm(20)
+
+  # F-tests
+  f1 <- F_Test(a,b)
+  f2 <- var.test(b,a) #manual determination of greater sd as numerator
+
+  # Testing for equality
+  round(f1, 5) == round(f2$statistic, 5)
+
+  # T-tests
+  t1 <- T_Test(a,b)
+  t2 <- t.test(a,b)
+
+  # Testing for equality
+  round(t1, 5) == round(abs(t2$statistic), 5) #t.test gives negative t value
+
+# Randomly generated data unequal variance
+set.seed(20)
+c <- rnorm(20, sd = 1)
+d <- rnorm(20, sd = 5)
+
+  # F-tests
+  f3 <- F_Test(c,d)
+  f4 <- var.test(d,c) #manual determination of greater sd as numerator
+
+  # Testing for equality
+  round(f3, 5) == round(f4$statistic, 5)
+
+  # T-tests
+  t3 <- T_Test(c,d)
+  t4 <- t.test(c,d)
+
+  # Testing for equality
+  round(t3, 5) == round(abs(t4$statistic), 5) #t.test gives negative t value
+
+
+
+
+
+
+
+
+
 
 use file.choose() to find data
