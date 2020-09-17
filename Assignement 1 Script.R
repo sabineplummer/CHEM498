@@ -11,19 +11,13 @@ library(readr)
 # F-test
 F_Test <- function (x, y) { #variables 
   if (sd(x) > sd(y)) {
-    output <- (sd(x))^2/(sd(y))^2
+    return (sd(x))^2/(sd(y))^2
   } 
   if (sd(y) > sd(x)) {
-    output <- (sd(y))^2/(sd(x))^2
+    return (sd(y))^2/(sd(x))^2
   }
-  return (output)
 }
 
-# F-test
-F_Test <- function (x, y) { #variables 
-  output <- (sd(x))^2/(sd(y))^2 #formula
-  return (output)
-}
   
 # Spool 
 S_Pool <- function (x, y) { #variables
@@ -56,15 +50,5 @@ T_Test <- function (x,y) { #variables
 set.seed(20)
 x <- rnorm(20)
 y <- rnorm(20)
-
-t.test(x,y)
-T_Test_Uvar(x,y)
-T_Test_Evar(x,y)
-T_Test(x,y)
-
-
-F_Test(x,y) 
-qf(0.95, df1=(length(x)-1), df2=(length(y)-1))
-
 
 use file.choose() to find data
