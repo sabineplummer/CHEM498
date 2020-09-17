@@ -84,12 +84,42 @@ d <- rnorm(20, sd = 5)
   round(t3, 5) == round(abs(t4$statistic), 5) #t.test gives negative t value
 
 
+# Government of Canada Data
+
+Data2019 <- read.csv("en_climate_daily_QC_7025251_2019_P1D.csv", stringsAsFactors = FALSE) #2019
+str(Data2019)
+Data2020 <- read.csv("en_climate_daily_QC_7025251_2020_P1D.csv", stringsAsFactors = FALSE) #2020
+str(Data2020)
+
+# Subsetting dataframes (selecting March)
+
+Data2019_subset <- subset(Data2019, Month == 5)
+str(Data2019_subset)
+Data2020_subset <- subset(Data2020, Month == 5)
+str(Data2020_subset)
+
+# Testing daily means
+
+# F-tests
+f1 <- F_Test(Data2019_subset$Mean.Temp...C.,Data2020_subset$Mean.Temp...C.)
+f1
+f2 <- var.test(Data2020_subset$Mean.Temp...C.,Data2019_subset$Mean.Temp...C.) #manual determination of greater sd as numerator
+f2
+# Testing for equality
+round(f1, 5) == round(f2$statistic, 5)
+
+# T-tests
+t1 <- T_Test(Data2019_subset$Mean.Temp...C.,Data2020_subset$Mean.Temp...C.)
+t1
+t2 <- t.test(Data2019_subset$Mean.Temp...C.,Data2020_subset$Mean.Temp...C.)
+t2
+# Testing for equality
+round(t1, 5) == round(abs(t2$statistic), 5) #t.test gives negative t value
 
 
 
 
 
 
-
-
-use file.choose() to find data
+  
+  
