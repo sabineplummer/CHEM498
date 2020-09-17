@@ -21,8 +21,8 @@ S_Pool <- function (x, y) { #variables
 }
 
 # T-test with equal variance
-T_Test_Evar <- function (x, y, s) { #variables
-  result <- (((abs(mean(x)-mean(y)))/s)*(sqrt((length(x)*length(y))/(length(x)+length(y))))) #formula
+T_Test_Evar <- function (x, y) { #variables
+  result <- (((abs(mean(x)-mean(y)))/S_Pool(x,y))*(sqrt((length(x)*length(y))/(length(x)+length(y))))) #formula
   print (result)
 }
 
@@ -40,6 +40,7 @@ y <- rnorm(20)
 
 t.test(x,y)
 T_Test_Uvar(x,y)
+T_Test_Evar(x,y)
 
 
 use file.choose() to find data
