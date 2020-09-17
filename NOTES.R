@@ -158,9 +158,22 @@ print(x)
 
 
 
+# Variable type change example
 
+v <- factor(c("2", "3", "5", "7", "11"))
+str(v)
+print(v)
+v <- as.character(v)  
+str(v)
+print(v)
+v <- as.numeric(v)  
+str(v)
+print(v)
+v <- as.integer(v)  
+str(v)
+print(v)
 
-
+# has to go through character to get to interger/numerical from factor
 
 
 
