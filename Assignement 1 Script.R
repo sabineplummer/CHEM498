@@ -45,6 +45,8 @@ T_Test <- function (x,y) { #variables
     }
 }
 
+###
+
 # Randomly generated data equal variance
 set.seed(20)
 a <- rnorm(20)
@@ -86,37 +88,39 @@ d <- rnorm(20, sd = 5)
 
 # Government of Canada Data
 
-Data2019 <- read.csv("en_climate_daily_QC_7025251_2019_P1D.csv", stringsAsFactors = FALSE) #2019
+Data2019 <- read.csv("en_climate_daily_QC_7025251_2019_P1D.csv", stringsAsFactors = FALSE) #importing 2019
 str(Data2019)
-Data2020 <- read.csv("en_climate_daily_QC_7025251_2020_P1D.csv", stringsAsFactors = FALSE) #2020
+Data2020 <- read.csv("en_climate_daily_QC_7025251_2020_P1D.csv", stringsAsFactors = FALSE) #importing 2020
 str(Data2020)
 
-# Subsetting dataframes (selecting March)
+# Subsetting dataframes (selecting May)
 
 Data2019_subset <- subset(Data2019, Month == 5)
-str(Data2019_subset)
 Data2020_subset <- subset(Data2020, Month == 5)
-str(Data2020_subset)
 
-# Testing daily means
+  # Testing daily means
 
-# F-tests
-f1 <- F_Test(Data2019_subset$Mean.Temp...C.,Data2020_subset$Mean.Temp...C.)
-f1
-f2 <- var.test(Data2020_subset$Mean.Temp...C.,Data2019_subset$Mean.Temp...C.) #manual determination of greater sd as numerator
-f2
-# Testing for equality
-round(f1, 5) == round(f2$statistic, 5)
+  # F-tests
+  f1 <- F_Test(Data2019_subset$Mean.Temp...C.,Data2020_subset$Mean.Temp...C.)
+  f2 <- var.test(Data2020_subset$Mean.Temp...C.,Data2019_subset$Mean.Temp...C.) #manual determination of greater sd as numerator
 
-# T-tests
-t1 <- T_Test(Data2019_subset$Mean.Temp...C.,Data2020_subset$Mean.Temp...C.)
-t1
-t2 <- t.test(Data2019_subset$Mean.Temp...C.,Data2020_subset$Mean.Temp...C.)
-t2
-# Testing for equality
-round(t1, 5) == round(abs(t2$statistic), 5) #t.test gives negative t value
+  # Testing for equality
+  round(f1, 5) == round(f2$statistic, 5)
 
+  # T-tests
+  t1 <- T_Test(Data2019_subset$Mean.Temp...C.,Data2020_subset$Mean.Temp...C.)
+  t2 <- t.test(Data2019_subset$Mean.Temp...C.,Data2020_subset$Mean.Temp...C.)
 
+  # Testing for equality
+  round(t1, 5) == round(abs(t2$statistic), 5) #t.test gives negative t value
+
+  # Tcalc vs Ttable
+  if (T_Test(Data2019_subset$Mean.Temp...C.,Data2020_subset$Mean.Temp...C.) 
+      > qt(0.95, df=(length(Data2019_subset$Mean.Temp...C.)+(length(Data2020_subset$Mean.Temp...C.))-2))) {
+    print("Difference is significant")
+  } else {
+    print("Difference is not significant")
+  }
 
 
 
