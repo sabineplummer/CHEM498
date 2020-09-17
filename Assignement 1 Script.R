@@ -17,7 +17,6 @@ F_Test <- function (x, y) { #variables
 # Spool 
 S_Pool <- function (x, y) { #variables
   result <- sqrt((((sd(x))^2)*(length(x)-1)+((sd(y))^2)*(length(y)-1))/(length(x)+length(y)-2)) #formula
-  print (result)
 }
 
 # T-test with equal variance
@@ -33,14 +32,22 @@ T_Test_Uvar <- function (x, y) { #variables
 }
 
 # Appropriate T-test runs based on F-test result
+T_Test <- function (x,y) { #variables
+  result <- if (F_Test(x,y) <= qf(0.95, df1=(length(x)-1), df2=(length(y)-1))) 
+    {T_Test_Evar(x,y)}
+  else {T_Test_Uvar(x,y)}
+  print (result)
+  }
 
 # Randomly generated data
+set.seed(20)
 x <- rnorm(20)
 y <- rnorm(20)
 
 t.test(x,y)
 T_Test_Uvar(x,y)
 T_Test_Evar(x,y)
+T_Test(x,y)
 
 
 use file.choose() to find data
