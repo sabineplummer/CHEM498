@@ -25,9 +25,12 @@ mean(x)
 library (readr)
 
 # Types of data in R
-# - Numerical data (42, real, integer)
+# - Numerical data; numbers (42, real, integer)
+# - Integer data; integer (whole numbers)
 # - Character data; string ("Oompaloompa")
 # - Factor data; categorical ("candy", candy canes", "candy corn", "syrup")
+# - Ordinal data; ordered classifications (educational level)
+# - Binary data; 1 0
 # - Missing values (NA)
 
 #Vectors: column of a table
@@ -109,14 +112,15 @@ merged_dataset <- merge("dataset1", "dataset2", by = "common vector")
 merged_dataset <- rbind("dataset1", "dataset2")
 
 # Statistic functions
-# summary()
-# sum ()
-# mean()
-# median()
-# max(), min()
-# sd()
-# quantile()
-# str()
+summary()
+sum ()
+mean()
+median()
+max()
+min()
+sd()
+quantile()
+str()
 
 # Syntax
 # na.rm = TRUE, NA data is ignored
@@ -152,14 +156,11 @@ while (length(x) < 10) {
   x <- c(x,new) }
 print(x)
 
-
-
-
-
-
+# Coercing data
+x <- as.numeric(c("-.1", "2.7", "B"))
+# B will be recoded as NA
 
 # Variable type change example
-
 v <- factor(c("2", "3", "5", "7", "11"))
 str(v)
 print(v)
@@ -172,14 +173,25 @@ print(v)
 v <- as.integer(v)  
 str(v)
 print(v)
-
 # has to go through character to get to interger/numerical from factor
 
+# Matrix to data frame
+as.data.frame()
 
+# Dates
+# Use POSIXct date/time (lubridate package)
+as.POSIXct()
 
+# Missing data 
+is.na(x)
+is.null(x)
+Inf # infinite 
+NaN # not a number
 
-
-
+# Working with NA
+na.rm = T #remove missing data
+na.omit 
+# Amelia II, Mice, and mitools packages for imputations
 
 
 
