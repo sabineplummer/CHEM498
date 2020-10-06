@@ -60,7 +60,7 @@ str(RSQA)
 merged_data1 <- rbind(ENclimate11, ENclimate12)
 str(merged_data1)
 
-merged_data2 <- merge(merged_data1, RSQA, by.x = "Date.Time", by.y = "Date...Time")
+merged_data2 <- merge(merged_data1, RSQA, by.x = "Date.Time", by.y = "Date...Time", all.x = FALSE, all.y = TRUE)
 str(merged_data2)
 
 
