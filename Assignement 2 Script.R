@@ -9,6 +9,7 @@
 library(readr)
 library(dplyr)
 library(naniar)
+library(ggplot2)
 
 
 # STEP 1 --> see documentation
@@ -63,7 +64,7 @@ str(RSQA)
 merged_data1 <- rbind(ENclimate11, ENclimate12) # merging similar dataframes by appending one to the other
 str(merged_data1)
 
-merged_data2 <- merge(merged_data1, RSQA, by.x = "Date.Time", by.y = "Date...Time", all.x = FALSE, all.y = TRUE) # merging dataframes by date
+merged_data2 <- merge(merged_data1, RSQA, by.x = "Date.Time", by.y = "Date...Time", all.x = TRUE, all.y = FALSE) # merging dataframes by date
 str(merged_data2)
 
 
@@ -99,7 +100,15 @@ merged_data_clean <- merged_data2_NA %>% filter (
 )
 
 
+# STEP 7 --> Plots 
+
+
 
     
 
 
+
+
+
+
+# Help with the naniar package: https://cran.r-project.org/web/packages/naniar/vignettes/replace-with-na.html
