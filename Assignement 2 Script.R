@@ -85,20 +85,28 @@ str(merged_data2_NA)
 # filters
 
 merged_data_clean <- merged_data2_NA %>% filter (
+  Temp...C. >= -20.4,
+  Temp...C. <= 10.5,
+  Rel.Hum.... >= 0,
+  Rel.Hum.... <= 100,
+  Wind.Dir..10s.deg. >= 0,
+  Wind.Dir..10s.deg. <= 36,
+  Stn.Press..kPa. <= 108.48,
   PM2.5..ug.m3. >= 0, 
-  PM2.5..ug.m3. < 200,
+  PM2.5..ug.m3. <= 200,
   PM10..ug.m3.  >= 0, 
-  PM10..ug.m3.  < 200,
+  PM10..ug.m3.  <= 200,
   O3..ppb. >= 0, 
-  O3..ppb. < 150,
+  O3..ppb. <= 150,
   NO..ppb. >= 0, 
-  NO..ppb. < 100,
+  NO..ppb. <= 100,
   NO2..ppb. >= 0, 
-  NO2..ppb. < 100,
+  NO2..ppb. <= 100,
   SO2..ppb. >= 0,
-  SO2..ppb. < 20
+  SO2..ppb. <= 20
 )
 
+str(merged_data_clean)
 
 # STEP 7 --> Plots 
 
@@ -112,3 +120,5 @@ merged_data_clean <- merged_data2_NA %>% filter (
 
 
 # Help with the naniar package: https://cran.r-project.org/web/packages/naniar/vignettes/replace-with-na.html
+# Min/Max data: https://climate.weather.gc.ca/glossary_e.html#s_onGround 
+# Max pressure: https://en.wikipedia.org/wiki/Atmospheric_pressure
