@@ -10,6 +10,7 @@ library(readr)
 library(dplyr)
 library(naniar)
 library(ggplot2)
+library(ggpubr)
 
 
 # STEP 1 --> see documentation
@@ -92,6 +93,7 @@ merged_data_clean <- merged_data2_NA %>% filter (
   Wind.Dir..10s.deg. >= 0,
   Wind.Dir..10s.deg. <= 36,
   Stn.Press..kPa. <= 108.48,
+  Stn.Press..kPa. >= 0,
   PM2.5..ug.m3. >= 0, 
   PM2.5..ug.m3. <= 200,
   PM10..ug.m3.  >= 0, 
@@ -110,9 +112,116 @@ str(merged_data_clean)
 
 # STEP 7 --> Plots 
 
+# Scatterplots
+
+# R
+
+plot(merged_data_clean$Date.Time, merged_data_clean$Temp...C.,
+     main = "Hourly Temperature in November/December 2019",
+     xlab = "Hourly Time",
+     ylab = "Temperature (°C)",
+     type = "p",
+)
+
+# ggplot2
+
+ggplot(data = merged_data_clean, aes(x = Date.Time, y = Temp...C.)) +
+  geom_jitter() +
+  xlab("Hourly Time") +
+  ylab("Temperature (°C)") +
+  ggtitle("Hourly Temperature in November/December 2019")
 
 
-    
+# Boxplots
+
+# R
+
+boxplot(merged_data_clean$NO..ppb., merged_data_clean$NO2..ppb., merged_data_clean$O3..ppb.,
+        main = "Concentration of Various Atmospheric Compounds",
+        xlab = "Compound",
+        ylab = "Concentration (ppb)",
+        at = c(1,2,3),
+        names = c("NO", "NO2", "O3")
+)
+
+# ggplot2
+
+O3 <- ggplot(data = merged_data_clean, aes(y = O3..ppb.)) + #I could not figure out how to put all three on one graph
+  geom_boxplot() +
+  xlab("O3") +
+  ylab("Concentration (ppb)")
+
+NO <- ggplot(data = merged_data_clean, aes(y = NO..ppb.)) + 
+  geom_boxplot() +
+  xlab("NO") +
+  ylab("Concentration (ppb)") 
+
+NO2 <- ggplot(data = merged_data_clean, aes(y = NO2..ppb.)) + 
+  geom_boxplot() +
+  xlab("NO2") +
+  ylab("Concentration (ppb)") 
+
+frankestein <- ggarrange( O3, NO, NO2)
+annotate_figure(frankestein, fig.lab = "Concentration of Various Atmospheric Comapounds")
+
+# Line Chart
+
+# R
+
+plot(merged_data_clean$Date.Time, merged_data_clean$Stn.Press..kPa.,
+     main = "Hourly Pressure in November/December 2019",
+     xlab = "Hourly Time",
+     ylab = "Pressure (kPa)",
+     type = "l",
+)
+
+# ggplot2
+
+ggplot(data = merged_data_clean, aes(x = Date.Time, y = Stn.Press..kPa.)) +
+  geom_line() +
+  xlab("Hourly Time") +
+  ylab("Pressure (kPa)") +
+  ggtitle("Hourly Pressure in November/December 2019")
+
+# Bar Plot
+
+# R
+
+plot(merged_data_clean$Date.Time, merged_data_clean$Rel.Hum....,
+     main = "Hourly Relative Humidity in November/December 2019",
+     xlab = "Hourly Time",
+     ylab = "Relative Humidity (%)",
+     type = "h",
+)
+
+# ggplot2
+
+ggplot(data = merged_data_clean, aes(x = Rel.Hum....)) +
+  geom_bar() +
+  xlab("Hourly Time") +
+  ylab("Relative Humidity (%)") +
+  ggtitle("Hourly Relative Humidity in November/December 2019")
+
+
+# Stair Steps
+
+# R
+
+plot(merged_data_clean$Day, merged_data_clean$Wind.Dir..10s.deg.,
+     main = "Daily Wind Direction in November/December 2019",
+     xlab = "Day",
+     ylab = "Wind Direction (10°)",
+     type = "s",
+)
+
+# ggplot2
+
+ggplot(data = merged_data_clean, aes(x = Day, y = Wind.Dir..10s.deg.)) +
+  geom_step() +
+  xlab("Day") +
+  ylab("Wind Direction (10°)") +
+  ggtitle("Daily Wind Direction in November/December 2019")
+
 
 
 
