@@ -162,7 +162,7 @@ NO2 <- ggplot(data = merged_data_clean, aes(y = NO2..ppb.)) +
   ylab("Concentration (ppb)") 
 
 frankestein <- ggarrange( O3, NO, NO2)
-annotate_figure(frankestein, fig.lab = "Concentration of Various Atmospheric Comapounds")
+annotate_figure(frankestein, fig.lab = "Concentration of Various Atmospheric Compounds")
 
 # Line Chart
 
@@ -196,7 +196,7 @@ plot(merged_data_clean$Date.Time, merged_data_clean$Rel.Hum....,
 
 # ggplot2
 
-ggplot(data = merged_data_clean, aes(x = Rel.Hum....)) +
+ggplot(data = merged_data_clean, aes(y = Rel.Hum....)) +
   geom_bar() +
   xlab("Hourly Time") +
   ylab("Relative Humidity (%)") +
@@ -221,9 +221,6 @@ ggplot(data = merged_data_clean, aes(x = Day, y = Wind.Dir..10s.deg.)) +
   xlab("Day") +
   ylab("Wind Direction (10°)") +
   ggtitle("Daily Wind Direction in November/December 2019")
-
-
-
 
 
 

@@ -193,6 +193,8 @@ na.rm = T #remove missing data
 na.omit 
 # Amelia II, Mice, and mitools packages for imputations
 
+# PLOTTING
+
 
 
 
