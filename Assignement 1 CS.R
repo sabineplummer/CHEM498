@@ -1,11 +1,12 @@
 #  You will need to submit this script as part of the assignment.  Put your name/ID number below
 # rename the script to: 
-#  NAME:  here        ID#: here
+#  NAME:  Sabine Plummer       ID#: 40087050
+
 # Clear all variables out of the R environment - good for cleaning-up BAD if you want to keep temporary calculations big data in memory etc...
 rm(list=ls())
 #_________________________________________ Setting general parameters for LR -------------------------
-# STANDARDS
 
+# STANDARDS
 C_levels <- c(0,1,2,4,7,10,20,25,50) # concentration levels of the standards
 Replicates <- 5 # number of replicates
 Stds <-c()
@@ -16,8 +17,8 @@ Intercept <- 43  ## ALWAYS MAKE POSITIVE AND ROUGHLY 1-5% OF MAX STD * SLOPE (50
 p_known <- c(Intercept,Slope)  # setup the "known" parameters in matrix form 2 rows x 1 column
 
 rm(Slope, Intercept) # don't need them anymore - remove
-# ERROR/NOISE
 
+# ERROR/NOISE
 Types_of_noise <- c("uniform","root-proportional","proportional")  # what types of noise are encountered?
 Noise_type <-Types_of_noise[1] # the type of noise that will be in the calibration/sample data
 
@@ -56,7 +57,7 @@ Signals <- Stds_array%*%p_known  # in R this is a MATRIX multiplication: using j
 
 
 # do we see the expected "perfect" calibration?  un comment to see
-#  plot(Stds,Signals)  #take a look - verify it is as expected.  This is the NOISE free "perfect" data
+# plot(Stds,Signals)  #take a look - verify it is as expected.  This is the NOISE free "perfect" data
 
 # -------------------------------------------- End of Stds and Signals -----------------------------
 
@@ -95,7 +96,7 @@ if (Noise_type =="uniform"){
   # update the noise vector to now be root proportional
   Noise_vector <- Noise_vector*Noise_scalar # note, this is using the "regular" point by point multiplication - not matrix multiplication
   
-  # if the type of noise is NOT "uniform" or "prportional" then.... 
+  # if the type of noise is NOT "uniform" or "proportional" then.... 
 } else  { #noise must be "proportional"
   # first start off with a noise vector with uniform noise throughout and large enough to produce the expected %RSD on the maximum signal
   Noise_vector <-rnorm(length(Stds),0,RSD_at_max*max(Signals))  # find the max signal, multiply by RSD and use this as the SD for the normal distribtion   
@@ -141,7 +142,7 @@ plot(Stds,SN)
 # DIY_LR_p = (X^T * X)^-1 * X^T * Y = p
 #So the "do it yourself" LR is:
 
-DIY_LR_p <- solve(t(Stds_array)%*%Stds_array)%*%t(Stds_array)%*%Signals
+DIY_LR_p <-solve(t(Stds_array)%*%Stds_array)%*%t(Stds_array)%*%Signals
 
 # should (assuming defaults) = 48.41316, 27.12816
 
@@ -173,7 +174,7 @@ Compact_p<-summary(Rs_LR_p)
 # Use the "print" and "paste" functions
 
 # Change PO to TRUE to print-out the values on screen - make FALSE to silence the printing
-PO <- TRUE
+PO <- FALSE
 
 if (PO) {
   #EXPECTED VALUES
@@ -191,7 +192,7 @@ if (PO) {
   
   #Calc the SD of the residuals found in lm (equivalent to the Sy or Sr)
   # Careful, what are the correct # of Degrees of Freedom?  Why not use  the built-in sd function??
-  DIY_Sr <- sum(((Rs_LR_p$residuals)^2)/Rs_LR_p$df.residual)^.5
+  DIY_Sr <-(sum((Rs_LR_p$residuals)^2)/Rs_LR_p$df.residual)^.5
   # How does that compare to what we expect using the input noise? again, use the same DoF as previous (to permit a fair comparison)
   Expected_Sr <- (sum((Noise_vector)^2/43)^.5)
   # should equal 35.41002 if defaults used
@@ -205,10 +206,10 @@ if (PO) {
   
   
   # make sure the regression residuals have a mean of 0 (or close to) - as expected!
-  Mean_resid_close_to_0 <-NA
+  Mean_resid_close_to_0 <-sum(Noise_vector)
   
   # since we know the noise that we added onto the signal (our "input" residuals), do they have a mean = 0?
-  Expected_resid <-NA
+  Expected_resid <-sum(Rs_LR_p$residuals)
   
   print(paste("CALCULATED mean regression residual is:",round((Mean_resid_close_to_0), digits = 2)))
   print(paste("EXPECTED mean regression residual is:",round((Expected_resid), digits = 2)))
@@ -222,7 +223,7 @@ if (PO) {
   
 }  # ending bracket for the "if" print statement
 
-#  OKAY nOW THAT WE TRUST R TO COMPUTE A LINEAR REGRESSION - HOW ABOUT THE ERROR?
+#  OKAY NOW THAT WE TRUST R TO COMPUTE A LINEAR REGRESSION - HOW ABOUT THE ERROR?
 
 
 #_________EXERCISE 3  ERROR PROPIGATION   See slide 32 _________________________________________________________________
@@ -235,18 +236,25 @@ Smpl_a_Sig <-c(915.2915, 941.3969, 939.0855, 984.2708, 952.9782)
 Mean_a_Sig <- mean(Smpl_a_Sig)
 
 
-Conc_a <- NA  # apply the calib eqn to calc the mean concentration 
+Conc_a <- (Mean_a_Sig-Rs_LR_p$coefficients[1])/Rs_LR_p$coefficients[2]  # apply the calib eqn to calc the mean concentration 
 Conc_a <-unname(Conc_a)  # unname strips off the residual names from the coefficients (could also have just used [[]] in previous line)
 
 
 
 # ______________________________ Calc the "textbook" variance see slide 33________________________________________
 
-#Var_unk_txtbk
+# Var_unk_txtbk
 # Calc the expected variance in the unknown using the "textbook" equation
 
-## *********   ## REMOVE RH SIDE OF THIS EQN BEFORE RELEASING THE SCRIPT!!
-Var_unk_text <- NA
+
+Sr <- Compact_p$sigma
+m <- Rs_LR_p$coefficients[2]
+M <- length(Smpl_a_Sig)
+N <- length(Stds)
+ybar <- (Mean_a_Sig - (mean(Signals)))^2
+Sxx <- sum((Stds_array[,2] - mean(Stds_array[,2]))^2)
+
+Var_unk_text <- (Sr^2/m^2)*((1/M)+(1/N)+(ybar/((m^2)*Sxx)))
 # should =  0.4225204 assuming defaults
 
 
@@ -256,37 +264,37 @@ Var_unk_text <- NA
 # Break this down into bite sized pieces
 
 # Step 1: calc the derivative vector
-
-Deriv_f <- NA
+df <- c(-1/m, -Conc_a/m)
+Deriv_f <- array(df, c(2,1))
 # should =  -0.03686206 -1.22047272
 
 
 # Step 2: Now calc the VCV
 
-VCV <- NA
+VCV <- solve(t(Stds_array)%*%Stds_array)*(Sr^2)
 
 
 # Step 3: caclulate the variance due to calibration alone
 
-Var_calib <-NA
+Var_calib <-Sr^2/M
 
 # Step 4: calculate the total variance by adding the contributions from both
 # also make the substitution for the sample variance (sigma_Yunk ^2) for the variance from the calibration (sigma_Y_calib^2/M)
 # Careful: when looking at the slides recall N is the total number of standards measurements and M is the total number of unknown measurements
 # Nearly all the texts and CHEM 312 notes use N for the unknowns and M for the standards - Sorry
 
-Var_unk_VCV <- NA
+Var_unk_VCV <- (1/m)^2 * Var_calib + (t(Deriv_f) %*% VCV %*% Deriv_f)
 
 #______________________________________ Now calc the variance using the "algorithm" equation see slide 33__________________
 
 #Var_unk_alg
 
 # Calc the determinant of (X^t * X)
-Det_Xs<- NA
+Det_Xs<- det(t(Stds_array)%*% Stds_array)
 # should = 477350
 
 
-Var_unk_algo <- NA
+Var_unk_algo <- (Sr^2/m^2)*((1/M)+(1/Det_Xs)*(sum(Stds_array[,2]^2)-2*Conc_a*sum(Stds_array[,2]^2)+N*Conc_a^2))
 
 
 
@@ -295,14 +303,18 @@ Var_unk_algo <- NA
 # print-out the calculations of the variances using the print command similar to what was done above 
 
 # uncomment and put in appropriate text/variables for the following: 
-# print(paste("The Blah Blah:",(Var_unk_text)))
 
+PO2 <- FALSE
 
+if (PO2) {
 
+print(paste("the textbook variance is:",(Var_unk_text)))
+print(paste("the variance using the VCV matrix equation is:",(Var_unk_VCV)))
+print(paste("the variance using the algorithm equation is:",(Var_unk_algo)))
 
+# my algorithm equation doesn't pan out, but I can't find the issue... Most likely an error in the algo equation
 
-
-
+}
 
 #---------------------------------------------- XXX ---------------------------------------------------------
 
@@ -351,26 +363,29 @@ Var_unk_algo <- NA
 
 # okay, now start building the W vector/matrix
 
+b <- p_known[1]
+m <- p_known[2] 
+
 if (Noise_type =="uniform"){
-  W <-NA
+  W <- diag(length(Signals))
   print("Doing weighted regression with UNIFORM weights aka OLS")
   
 } else if (Noise_type =="root-proportional") {
   # This is the situation where the commercial calibration software would say that it is using "1/X" weighting.
   # as discussed above, this runs into TROUBLE when x=0 (i.e. the blanks), instead we will weight using the best estimate of the signal
   # If this was "real" data (i.e. collected in the lab, with noise) then we would perform a preliminary OLS to obtain the LR_p and then calculate a predicted/expected set of signals
-  W <- NA
+  W <- diag(x = 1/(Signals-b/m), length(Signals), length(Signals))
   
   print("Weighted regression, Weights = 1/variance and variance is proportional to the signal i.e. root proportional noise")
 } else  { #noise must be "proportional"
-  W <- NA
+  W <- diag(x = 1/(Signals-b/m)^2, length(Signals), length(Signals))
   print("Weighted regression with weights = 1/variance and variance is proportional to the signal^2 i.e. proportional noise")
 }
 
 # Careful here, we will be using a Weights vector/matrix with values proportional to the EXPECTED variance (i.e. uniform, root proportional or proportional)
 
 
-DIY_WLS_p <- NA  #<-- MODIFY ME (see above) TO INCLUDE WEIGHTING!
+DIY_WLS_p <- solve(t(Stds_array)%*%W%*%Stds_array)%*%t(Stds_array)%*%W%*%Signals  #<-- MODIFY ME (see above) TO INCLUDE WEIGHTING!
 
 
 
@@ -383,9 +398,9 @@ DIY_WLS_p <- NA  #<-- MODIFY ME (see above) TO INCLUDE WEIGHTING!
 
 # careful on the syntax - including the "weights" in the lm call requires including the "lm(other arguments, weights = ABC)"
 
-Rs_WLR_p <- NA  # build linear regression model on full data, use the weights option
-
-
+Rs_WLR_p <- lm(Signals ~ Stds, data=data.frame(Stds,Signals), weights = diag(W))  # build linear regression model on full data, use the weights option
+           
+    
 Compact_wp<-summary(Rs_WLR_p)  # R has a summary function that helps with calculating some useful summary statistics
 # Take a look at all the parameters ,if you want,
 # print(Compact_wp)  # output just SOME of the LR parameters
@@ -395,22 +410,22 @@ print(paste("DIY_slope and intercept are:", round(DIY_WLS_p,3)," and R finds:",r
 
 # __________________________________  SIMPLE PLOT OF CALIBRATION DATA AND THE OLS vs WLS lines_____________
 
-
 plot(Stds,Signals)  #take a look - verify it is as expected.
 abline(Rs_WLR_p,col=4)  # add a line extracting the coefficients from the lm output
 abline(Rs_LR_p, col=3)
-
 
 # _____________________________ CALCULATE THE ERROR ON A SAMPLE using the matrix approach _____________________________________
 # Var_unk_wVCV
 # Break this down into bite sized pieces
 
 # Step 1: calc the derivative vector
-# DONE ABOVE no need to recalculate it  we called it "Deriv_f"
+
+df <- c(-1/Rs_WLR_p$coefficients[2], -Conc_a/Rs_WLR_p$coefficients[2])
+Deriv_f <- array(df, c(2,1))
 
 # Step 2: Now calc the weighted VCV
 
-WVCV <- NA
+WVCV <- solve(t(Stds_array)%*%W%*%Stds_array)*(Compact_wp$sigma)^2
 
 # Doing the manual multiplication out of: solve(t(Stds_array)%*%W%*%Stds_array)
 # produces:
@@ -424,7 +439,8 @@ WVCV <- NA
 # weighted variance = sum(Wi*(Yi - (b0+b1Xi))^2)/(Dof = N-2)     Where N = # of stds measured, Wi, Xi and Yi are the ith value
 
 #Let's prove this:
-W_Var <-NA
+W_Var <- diag(W)*(Signals-(Rs_WLR_p$coefficients[1]+Rs_WLR_p$coefficients[2]*Stds))^2
+W_Var <- sum(W_Var)/(N-2)
 print(paste("manually calulated weighted variance is:",round(W_Var,3),", R's value is:",round((Compact_wp$sigma)^2,3) ))
 # these should be the same!
 
@@ -434,7 +450,7 @@ print(paste("manually calulated weighted variance is:",round(W_Var,3),", R's val
 
 # Step 3: calculate the Weighted variance due to calibration alone
 
-WVar_calib <-NA
+WVar_calib <-(t(Deriv_f) %*% WVCV %*% Deriv_f)
 
 # Step 4: calculate the total variance by adding the contributions from both
 # CAREFUL - the equation used above in the OLS case makes a critical simplification - the variance in measuring the unknown is the same as the variance
@@ -444,8 +460,8 @@ WVar_calib <-NA
 # associated with measuring the unknown. - see slides!
 
 
+Var_unk_wVCV <- (Compact_wp$sigma^2/(M*Rs_WLR_p$coefficients[2])^2)+ WVar_calib
 
-Var_unk_wVCV <- NA
 
 #__________________________________ other stuff - do not forget _________________________________________________
 

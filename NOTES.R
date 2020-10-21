@@ -195,6 +195,39 @@ na.omit
 
 # PLOTTING
 
+# Arguments
+# x - x coordinates of points on plot
+# y - y coordinates of points on plot
+# type = "..." (p for points, l for lines)
+# title = "..." (title of plot)
+# xlab = "..." (title of x axis)
+# ylab = "..." (title of y axis)
+
+data(mtcars)
+plot(mtcars$cyl, mtcars$mpg) 
+boxplot(mtcars$cyl, mtcars$mpg)
+
+# ggplot2
+
+# Code layers structure of plot elements
+
+library(ggplot2)
+ggplot()
++ geom_point(data = quakes, aes(x = lat,y = long, colour = stations)
+
+# Learn to use both!
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
