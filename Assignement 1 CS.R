@@ -367,7 +367,7 @@ b <- p_known[1]
 m <- p_known[2] 
 
 if (Noise_type =="uniform"){
-  W <- diag(length(Signals))
+  W <- diag(x = 1, length(Signals), length(Signals))
   print("Doing weighted regression with UNIFORM weights aka OLS")
   
 } else if (Noise_type =="root-proportional") {
@@ -466,6 +466,18 @@ Var_unk_wVCV <- (Compact_wp$sigma^2/(M*Rs_WLR_p$coefficients[2])^2)+ WVar_calib
 #__________________________________ other stuff - do not forget _________________________________________________
 
 #  You will need to calculate the unknown's confidence interval in the script above under OLS, and WLS (both cases)
+
+t <- abs(qt(0.05, M))
+CI <- (t*Var_unk_wVCV)/sqrt(M)
+
+print(paste("Concentration of the unknown is:",round(Conc_a,3),"+/-",round(CI,3), "at the 95% CI"))
+
 # verify you have included your name / ID# IN the script file above
 # verify you have prepared all the necessary plots and values and put them into your report/assignment (a Word document)
+
+# plot residuals
+
+plot(Stds, Compact_p$residuals, ylab = "Residuals using OLS")
+plot(Stds, Compact_wp$residuals, ylab = "Residuals using WLS")
+
 
