@@ -531,6 +531,8 @@ switch (Exercise,  # the SWITCH statement allows you to run selected pieces of c
           Data_together<-list((rnorm(Num, G_means[1], sd = G_SDs[1])),(rnorm(Num, G_means[2], sd = G_SDs[2])),(rnorm(Num, G_means[3], sd = G_SDs[3])))  # create a data set of random numbers that follow the Normal distribution
           boxplot(Data_together)
           
+          pairwise.wilcox.test(KW_results)
+          
         },# END OF EXERCISE 
         
         
@@ -542,15 +544,15 @@ switch (Exercise,  # the SWITCH statement allows you to run selected pieces of c
           
           #  DO THE ASSIGNMENT CODING IN HERE!!! 
         
-                 # Need to initialize some variables for later use - DON'T fiddle with these!
+                 # Need to initialize some variables for later use 
                 Ps_A = numeric() #empty vector to hold p values
-                Ps_K = numeric()
+                Ps_K = numeric() #empty vector to hold p values
                 fract_A = numeric() #emptry vector to hold the fration of p's <0.05
                 fract_K = numeric() #emptry vector to hold the fration of p's <0.05
                 third_mean = numeric() #initalize the variable
                 # Done initalizing varibles
                 
-                Num <- 10 # Number of data points in each group
+                Num <- 5 # Number of data points in each group
                 alpha <- 0.05
                 
                 G1_mean <- 0
@@ -561,40 +563,34 @@ switch (Exercise,  # the SWITCH statement allows you to run selected pieces of c
                 
                 Max_diff_of_means <-5
                 third_mean = ((G1_mean + G2_mean) / 2) + Max_diff_of_means 
-                G3_mean <- numeric()  # just initialize for now
+                G3_mean <- numeric()  # initalizing varible
                 SD3 <- 1
                 
                 
-                ## CAREFUL  SETTING n_iter >200 can really slow the system down!!
-                n_iter = 100 #serves two purposes 1- #of times to do the SW test 2-# of steps for the second mean
+                n_iter = 100 # no. of times to do the test and no. of steps for the second mean
                 G3_mean = seq(G1_mean, to = third_mean, length.out = n_iter)
-                #build vector containing all of the means in the second distribution
+                # build vector containing all of the means in the second distribution
                 
-                ## 1 create a loop that runs n_iter times.  Each time test how successful the SW test is at a given difference of means  
+                # 1 create a loop that runs n_iter times.  Each time test how successful the test is at a given difference of means  
                 for (m in 1:n_iter){ #number of different distances btw the two means 
                         
                         # Run the test on a set of data, repeat n_iter times
                         for (n in 1:n_iter){ #number of SW tests to run
                                 #The syntax is: rnorm(n, mean = X, sd = Y)
-                                #build one set at mean = 0 and SD=1 and a second at mean = "G2_mean[m]" 
-                                
-                                #Group1 <-rnorm(Num, G1_mean, sd = SD1)  # create a data set of random numbers that follow the Normal distribution
-                                #Group2 <-rnorm(Num, G2_mean, sd = SD2)  # create a data set of random numbers that follow the Normal distribution
-                                #Group3 <-rnorm(Num, G3_mean[m], sd = SD3) # create a data set of random numbers that follow the Normal distribution
-                                
-                                # Store each groups data (the dependant data) in a vector called "Variable"
-                                Variable <- c((rnorm(Num, G1_mean, sd = SD1)),(rnorm(Num, G2_mean, sd = SD2)),(rnorm(Num, G3_mean[m], sd = SD3)))  # create a data set of random numbers that follow the Normal distribution
+                         
+                                # Store each groups data (the dependent data) in a vector called "Variable"
+                                Variable <- c((rnorm(Num, G1_mean, sd = SD1)),(rnorm(Num, G2_mean, sd = SD2)),(rnorm(Num, mean = G3_mean[m], sd = SD3)))  # create a data set of random numbers that follow the Normal distribution
                                 # Store the independent data in the "condition" vector named cond
-                                cond<-c(rep(1,10),rep(2,10),rep(3,10))
+                                cond<-c(rep(1,5),rep(2,5),rep(3,5))
                                 
-                                
+             
                                 test_data<-data.frame(Variable,cond) # assemble into a simple data frame
                                 
                                 # RUN THE test on the Data
                                 
                                 # run the ANOVA using pretty much every default setting 
                                 
-                                A_results<-aov(Variable~cond, data = test_data)
+                                A_results<-aov(Variable~as.factor(cond), data = test_data)
                                 Compact_p<-summary(A_results)
                                 p_val<-Compact_p[[1]]$`Pr(>F)`[1]
 
@@ -608,7 +604,6 @@ switch (Exercise,  # the SWITCH statement allows you to run selected pieces of c
                                 Ps_K[n] = round(KW_results$p.value,3) #extract out the p-value and store in a vector
                                 
                                 
-                                
                         } # finish one test (for (n in 1:n_iter))
                         
                         #if the p-value is <0.05 then the test finds a significant difference btw the means
@@ -618,9 +613,12 @@ switch (Exercise,  # the SWITCH statement allows you to run selected pieces of c
                         
                 }
                 
-                plot(G3_mean,fract_A, main="fraction of data sets where the difference between the means was detected",xlab="distance between the two means",ylab="fraction",col="red")
+                plot(G3_mean,fract_A, main="fraction of data sets where the difference between the means was detected",xlab="distance between the means",ylab="fraction",col="red")
                 points(G3_mean,fract_K, col="blue")
                 legend("bottomright", legend=c("The Anova test", "The KW test"),col=c("red", "blue" ),lty=1)
+        
+                plot(TukeyHSD(A_results))
+                print(pairwise.wilcox.test(Variable, cond))
                 
         }# END OF EXERCISE nine
         
