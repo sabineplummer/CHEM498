@@ -461,7 +461,8 @@ prcomp()
 
 
 
-
+# PCR is just a MLR with PCA
+# PLS is supervised PCA for MLR
 
 
 
