@@ -52,21 +52,58 @@ split <- sample.split(flare$C, SplitRatio = 0.7)
 train <- subset(flare, split == T)
 test  <- subset(flare, split == F)
 
+nrow(train) # check split
+nrow(test)
+
 # Build a tree model with all variables using the training data
-tree.all <- rpart(C ~ CLASS + SIZE + DIST + ACT + EVO + PRE + HISTCOM + RECCOM + AREA + AREAL, data = train) # Use data = train for validation
-prp(tree.all)
-rpart.plot(tree.all)
-rpart.rules(tree.all)
+tree.c <- rpart(C ~ ., data = train, method = "class", control = rpart.control(minsplit = 20, minbucket = 7, maxdepth = 10, usesurrogate = 2, xval =10 )) # Use data = train for validation
 
-# Predict the test samples and check results
-tree.pred <- predict(tree.all, newdata = test)
+prp(tree.c)
+rpart.plot(tree.c)
+rpart.rules(tree.c)
 
-# Visualise cross validation result
-printcp(tree.all)
-plotcp(tree.all, minline = T, col = "red")
+# Visualize cross validation result
+printcp(tree.c)
+plotcp(tree.c, minline = T, col = "red")
 
 # Produces 2 plots --
 # Plot (1) r2 (from CV) versus number of splits.
 # Plot (2) Relative error from CV +/- 1 stddev from CV vs # splits.
-rsq.rpart(tree.all)
+rsq.rpart(tree.c)
 
+# Post-Pruning
+printcp(tree.c)
+bestcp <- tree.c$cptable[which.min(tree.c$cptable[,"xerror"]),"CP"] #choosing best cp
+
+# Prune the tree using the best cp.
+pruned <- prune(tree.c, cp = bestcp)
+
+# Plot pruned tree
+prp(pruned, faclen = 0, cex = 0.8, extra = 1)
+
+# Confusion Matrix (training data)
+conf.matrix <- table(train$C, predict(pruned,type = "class"))
+rownames(conf.matrix) <- paste("Actual", rownames(conf.matrix), sep = ":")
+colnames(conf.matrix) <- paste("Pred", colnames(conf.matrix), sep = ":")
+print(conf.matrix)
+
+# Test samples 
+tree.pred <- predict(pruned, newdata = test)
+summary(tree.pred)
+
+# Confusion Matrix (training data)
+conf.matrix.2 <- table(test$C, predict(pruned, test, type = "class"))
+rownames(conf.matrix.2) <- paste("Actual", rownames(conf.matrix.2), sep = ":")
+colnames(conf.matrix.2) <- paste("Pred", colnames(conf.matrix.2), sep = ":")
+print(conf.matrix.2)
+
+# Error Rate
+error.pred <- predict(pruned, test, type="class")
+conf.matrix.test <- table(test$C, error.pred)
+error.rate = round(mean(error.pred != test$C),2)
+error.rate
+
+
+# Sources: 
+# https://rpubs.com/maulikpatel/229337
+# https://www.listendata.com/2015/04/decision-tree-in-r.html
