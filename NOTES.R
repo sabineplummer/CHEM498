@@ -28,7 +28,7 @@ library (readr)
 # - Numerical data; numbers (42, real, integer)
 # - Integer data; integer (whole numbers)
 # - Character data; string ("Oompaloompa")
-# - Factor data; categorical ("candy", candy canes", "candy corn", "syrup")
+# - Factor data; categorical ("candy", "candy canes", "candy corn", "syrup")
 # - Ordinal data; ordered classifications (educational level)
 # - Binary data; 1 0
 # - Missing values (NA)

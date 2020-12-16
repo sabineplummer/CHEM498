@@ -13,6 +13,7 @@
 library("rpart")       # To build the decision tree model
 library("rpart.plot")  # To visualise decision tree results
 library("caTools")     # Split data into training and test sets
+library("caret")
 
 # Load the data
 flare <- read.csv('flare.data.2.csv')
@@ -91,7 +92,7 @@ print(conf.matrix)
 tree.pred <- predict(pruned, newdata = test)
 summary(tree.pred)
 
-# Confusion Matrix (training data)
+# Confusion Matrix (test data)
 conf.matrix.2 <- table(test$C, predict(pruned, test, type = "class"))
 rownames(conf.matrix.2) <- paste("Actual", rownames(conf.matrix.2), sep = ":")
 colnames(conf.matrix.2) <- paste("Pred", colnames(conf.matrix.2), sep = ":")
@@ -101,7 +102,21 @@ print(conf.matrix.2)
 error.pred <- predict(pruned, test, type="class")
 conf.matrix.test <- table(test$C, error.pred)
 error.rate = round(mean(error.pred != test$C),2)
-error.rate
+
+# Accuracy
+accuracy <- 1 - error.rate
+
+count <- length(error.pred)
+count
+
+# print out
+paste("error rate", error.rate)
+paste("accuracy:", accuracy)
+
+
+confusionMatrix(error.pred, test$C)
+
+
 
 
 # Sources: 
