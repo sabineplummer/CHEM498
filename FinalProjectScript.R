@@ -57,7 +57,7 @@ nrow(train) # check split
 nrow(test)
 
 # Build a tree model with all variables using the training data
-tree.c <- rpart(C ~ ., data = train, method = "class", control = rpart.control(minsplit = 20, minbucket = 7, maxdepth = 10, usesurrogate = 2, xval =10 )) # Use data = train for validation
+tree.c <- rpart(C ~ ., data = train, method = "class", parms = list(split = "gini"), control = rpart.control(minsplit = 20, minbucket = 7, cp = 0.01, maxdepth = 10)) # Use data = train for validation
 
 prp(tree.c)
 rpart.plot(tree.c)
