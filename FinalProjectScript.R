@@ -64,7 +64,6 @@ rpart.plot(tree.c)
 rpart.rules(tree.c)
 
 # Visualize cross validation result
-printcp(tree.c)
 plotcp(tree.c, minline = T, col = "red")
 
 # Produces 2 plots --
@@ -73,48 +72,30 @@ plotcp(tree.c, minline = T, col = "red")
 rsq.rpart(tree.c)
 
 # Post-Pruning
-printcp(tree.c)
 bestcp <- tree.c$cptable[which.min(tree.c$cptable[,"xerror"]),"CP"] #choosing best cp
 
 # Prune the tree using the best cp.
 pruned <- prune(tree.c, cp = bestcp)
 
 # Plot pruned tree
-prp(pruned, faclen = 0, cex = 0.8, extra = 1)
+prp(pruned)
+rpart.plot(pruned)
+rpart.rules(pruned)
 
 # Confusion Matrix (training data)
-conf.matrix <- table(train$C, predict(pruned,type = "class"))
-rownames(conf.matrix) <- paste("Actual", rownames(conf.matrix), sep = ":")
-colnames(conf.matrix) <- paste("Pred", colnames(conf.matrix), sep = ":")
-print(conf.matrix)
+train.pred <- predict(pruned, type = "class")
+confusionMatrix(train.pred, train$C)
 
 # Test samples 
 tree.pred <- predict(pruned, newdata = test)
 summary(tree.pred)
 
 # Confusion Matrix (test data)
-conf.matrix.2 <- table(test$C, predict(pruned, test, type = "class"))
-rownames(conf.matrix.2) <- paste("Actual", rownames(conf.matrix.2), sep = ":")
-colnames(conf.matrix.2) <- paste("Pred", colnames(conf.matrix.2), sep = ":")
-print(conf.matrix.2)
-
-# Error Rate
-error.pred <- predict(pruned, test, type="class")
-conf.matrix.test <- table(test$C, error.pred)
-error.rate = round(mean(error.pred != test$C),2)
-
-# Accuracy
-accuracy <- 1 - error.rate
-
-count <- length(error.pred)
-count
-
-# print out
-paste("error rate", error.rate)
-paste("accuracy:", accuracy)
+test.pred <- predict(pruned, test, type="class")
+confusionMatrix(test.pred, test$C)
 
 
-confusionMatrix(error.pred, test$C)
+
 
 
 
